@@ -1,0 +1,23 @@
+---
+version: "3.6"
+
+networks:
+  frontend:
+    external:
+      name: nginx-proxy
+  backend:
+    external:
+      name: ${COMPOSE_PROJECT_NAME}.backend
+
+services:
+  redis:
+    build: docker/redis
+    container_name: ${COMPOSE_PROJECT_NAME}.redis
+    restart: unless-stopped
+    ulimits:
+      memlock: 201326592
+      as: 2013265920
+    networks:
+      - backend
+    volumes:
+      - ./docker/.data/redis:/data

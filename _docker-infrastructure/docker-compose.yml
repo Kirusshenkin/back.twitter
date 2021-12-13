@@ -1,0 +1,96 @@
+---
+version: "3.6"
+
+networks:
+  frontend:
+    external:
+      name: nginx-proxy
+  backend:
+    external:
+      name: ${COMPOSE_PROJECT_NAME}.backend
+
+services:
+
+  nginx:
+    build:
+      context: docker/nginx
+    container_name: ${COMPOSE_PROJECT_NAME}.nginx
+    networks:
+      - frontend
+      - backend
+    env_file:
+      - application.env
+    restart: unless-stopped
+    depends_on:
+      - php-fpm
+    volumes:
+      - ../:/app/
+      - ./docker/nginx/sites/:/etc/nginx/sites-available/
+    labels:
+      traefik.enable: true
+      traefik.frontend.whitelistSourceRange: "${IP_WHITE_LIST}"
+      traefik.front.frontend.rule: "Host:${APP_DOMAIN}"
+      traefik.proxy.frontend.rule: "Host:${PROXY_DOMAIN};PathPrefixStrip:/s-api;AddPrefix:/api"
+      traefik.storage.frontend.rule: "Host:${PROXY_DOMAIN};PathPrefixStrip:/s-storage;AddPrefix:/storage"
+      traefik.frontend.redirect.entryPoint: "https"
+      traefik.port: 80
+      traefik.protocol: "http"
+
+  php-fpm:
+    build:
+      context: docker/php-fpm
+      args:
+        - INSTALL_XDEBUG=${INSTALL_XDEBUG}
+        - XDEBUG_PORT=${XDEBUG_PORT}
+        - TZ=UTC
+    restart: unless-stopped
+    container_name: ${COMPOSE_PROJECT_NAME}.php-fpm
+    environment:
+      - DB_CONNECTION=${DB_CONNECTION}
+      - DB_HOST=${COMPOSE_PROJECT_NAME}.postgres
+      - DB_PORT=${DB_PORT}
+      - DB_DATABASE=${DB_DATABASE}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - REDIS_HOST=${COMPOSE_PROJECT_NAME}.redis
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - REDIS_PORT=${REDIS_PORT}
+      - SCOUT_ELASTIC_HOST=${COMPOSE_PROJECT_NAME}.elasticsearch
+    env_file:
+      - application.env
+    networks:
+      - backend
+    volumes:
+      - ../:/app/
+      - ./docker/php-fpm/php.ini:/usr/local/etc/php/php.ini
+
+  php-worker:
+    build:
+      context: ./docker/php-worker
+      args:
+        - PHP_VERSION=7.4
+    restart: unless-stopped
+    depends_on:
+      - postgres
+      - redis
+    entrypoint: ${PHP_WORKER_ENTRYPOINT}
+    container_name: ${COMPOSE_PROJECT_NAME}.php-worker
+    networks:
+      - backend
+    environment:
+      - DB_CONNECTION=${DB_CONNECTION}
+      - DB_HOST=${COMPOSE_PROJECT_NAME}.postgres
+      - DB_PORT=${DB_PORT}
+      - DB_DATABASE=${DB_DATABASE}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - REDIS_HOST=${COMPOSE_PROJECT_NAME}.redis
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - REDIS_PORT=${REDIS_PORT}
+      - SCOUT_ELASTIC_HOST=${COMPOSE_PROJECT_NAME}.elasticsearch
+    env_file:
+      - application.env
+    volumes:
+      - ../:/app/
+      - ./docker/php-worker/supervisord.d:/etc/supervisord.d
+      - ./docker/php-worker/cron.d/crontab:/etc/crontabs/laradock

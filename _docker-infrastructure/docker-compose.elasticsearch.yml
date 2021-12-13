@@ -1,0 +1,33 @@
+---
+version: "3.6"
+
+networks:
+  frontend:
+    external:
+      name: nginx-proxy
+  backend:
+    external:
+      name: ${COMPOSE_PROJECT_NAME}.backend
+
+services:
+  elasticsearch:
+    build: ./docker/elasticsearch
+    volumes:
+      - elasticsearch:/usr/share/elasticsearch/data
+    container_name: ${COMPOSE_PROJECT_NAME}.elasticsearch
+    environment:
+      - cluster.name=${COMPOSE_PROJECT_NAME}.cluster
+      - node.name=${COMPOSE_PROJECT_NAME}.node
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - cluster.initial_master_nodes=${COMPOSE_PROJECT_NAME}.node
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    networks:
+      - backend
+
+volumes:
+  elasticsearch:
+    driver: ${ELASTICSEARCH_VOLUMES_DRIVER}

@@ -16,9 +16,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('/singin', SignInController::class);
-Route::post('/singup', SignUpController::class);
+Route::post('/signin', SignInController::class);
+Route::post('/signup', SignUpController::class);
 Route::middleware(['auth:api'])->get('/me', function (Request $request) {
     return $request->user();
 });
+// Route::get('/posts', )
 // Route::get('/posts', )

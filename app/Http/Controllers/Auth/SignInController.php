@@ -25,6 +25,7 @@ class SignInController extends Controller
         // $token->token->expires = now()->addDay();
 
         // $token->token->save();
+        info('token type', [get_class($token)]);
 
         return response()->json([ 'user' => $user, 'token' => (string) $token->accessToken ]);
     }

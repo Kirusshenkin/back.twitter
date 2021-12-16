@@ -22,10 +22,10 @@ class SignInController extends Controller
         
         $token = $user->createToken(config('app.name'));
         // Нужно придумать как реализовать рефреш токен
-        $token->token->expires = now()->addDay();
+        // $token->token->expires = now()->addDay();
 
-        $token->token->save();
+        // $token->token->save();
 
-        return response()->json([ 'user' => $user, 'token' => $token->accessToken ]);
+        return response()->json([ 'user' => $user, 'token' => (string) $token->accessToken ]);
     }
 }

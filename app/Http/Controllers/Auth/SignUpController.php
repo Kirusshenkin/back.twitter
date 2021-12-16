@@ -29,8 +29,6 @@ class SignUpController extends Controller
 
         // $token->token->save();
 
-        info('token', [$token]);
-
-        return response()->json([ 'user' => $user, 'token' => $token->accessToken ]);
+        return response()->json([ 'user' => $user, 'token' => (string) $token->accessToken ]);
     }
 }

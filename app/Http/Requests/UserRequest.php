@@ -27,7 +27,8 @@ class UserRequest extends FormRequest
             'birthday' => ['required', 'date', 'before:'.now()->subYears(18)->toDateString()],
             'gender' => 'required|in:male,female',
             'name' => 'required',
-            'surname' => 'required'
+            'surname' => 'required',
+            'email' => 'required',
             //
         ];
     }

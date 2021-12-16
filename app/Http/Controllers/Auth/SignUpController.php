@@ -25,11 +25,11 @@ class SignUpController extends Controller
 
         $token = $user->createToken(config('app.name'));
         // Нужно придумать как реализовать рефреш токен
-        $token->token->expires_at = now()->addDay();
+        // $token->token->expires = now()->addDay();
 
-        $token->token->save();
+        // $token->token->save();
 
-        info('token', [$token, $token->token]);
+        info('token', [$token]);
 
         return response()->json([ 'user' => $user, 'token' => $token->accessToken ]);
     }

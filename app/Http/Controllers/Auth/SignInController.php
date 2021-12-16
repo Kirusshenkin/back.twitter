@@ -3,14 +3,14 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\SignInRequest;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 class SignInController extends Controller
 {
     //
-    public function __invoke(Request $request) {
+    public function __invoke(SignInRequest $request) {
         $user = User::where('email', $request->get('email'))->first();
         if(!$user instanceof User) {
             return response()->json(['message'=> __('auth.user')], 404);

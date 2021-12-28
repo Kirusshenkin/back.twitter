@@ -26,7 +26,7 @@ class SignUpController extends Controller
         if ($request->hasFile('avatar')) {
             $file = $request->file('avatar');
             $extension = $file->getClientOriginalName();
-            $file->storeAs('avatars/', $user->id $filename);
+            $file->storeAs('avatars/', $user->id . '_' . $filename);
             $user->update([
                 'avatar' => $filename,
             ]);

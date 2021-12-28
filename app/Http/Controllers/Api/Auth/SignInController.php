@@ -6,9 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\SignInRequest;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
-use function __;
-use function config;
-use function response;
 
 class SignInController extends Controller
 {

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UserRequest extends FormRequest
@@ -11,7 +12,7 @@ class UserRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         return false;
     }
@@ -21,15 +22,16 @@ class UserRequest extends FormRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             'birthday' => ['required', 'date', 'before:'.now()->subYears(18)->toDateString()],
-            'gender' => 'required|in:male,female',
-            'name' => 'required',
-            'surname' => 'required',
-            'email' => 'required',
-            //
+            'gender' => ['required', 'in:' . implode(',', User::GENDERS)],
+            'name' => ['required', 'string'],
+            'surname' => ['required', 'string'],
+            'email' => ['required', 'email'],
+            'hashtag' => ['nullable', 'string'],
+            'avatar' => ['nullable', 'string']
         ];
     }
 }

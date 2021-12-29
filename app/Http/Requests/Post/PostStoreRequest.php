@@ -1,19 +1,19 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Post;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class SignUpRequest extends FormRequest
+class PostRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      *
      * @return bool
      */
-    public function authorize(): bool
+    public function authorize()
     {
-        return true;
+        return false;
     }
 
     /**
@@ -21,11 +21,10 @@ class SignUpRequest extends FormRequest
      *
      * @return array
      */
-    public function rules(): array
+    public function rules()
     {
         return [
-            'email' => ['required', 'string', 'email', 'unique:users'],
-            'password' => ['required', 'string', 'min:6'],
+            //
         ];
     }
 }

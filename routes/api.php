@@ -1,7 +1,8 @@
 <?php
 
-use App\Http\Controllers\Auth\SignInController;
-use App\Http\Controllers\Auth\SignUpController;
+use App\Http\Controllers\Api\Auth\SignInController;
+use App\Http\Controllers\Api\PostController;
+use App\Http\Controllers\Api\Auth\SignUpController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -18,8 +19,10 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/signin', SignInController::class);
 Route::post('/signup', SignUpController::class);
-Route::middleware(['auth:api'])->get('/me', function (Request $request) {
-    return $request->user();
+
+Route::group(['middleware' => ['auth:api']], function() {
+    Route::get('/me', function (Request $request) {
+        return $request->user();
+    });
+    Route::apiResource('/posts', PostController::class);
 });
-// Route::get('/posts', )
-// Route::get('/posts', )
